@@ -1,0 +1,146 @@
+﻿<!-- <p><a [routerLink]="['/login']">Logout</a></p> -->
+
+<div class="container">
+        <h2>SERPL Statutory Clearences <button (click)="showAddRow();open(content);" style='float: right;' type="button" class="btn btn-dark">Add New</button></h2>
+            <div class="panel panel-default">
+                    <div class="container" align = "center">
+                            <button (click) = "selectedStation = station" *ngFor="let station of stations" style = "margin: 10px;" type="button"  class="btn btn-dark">
+                                {{station}}</button>
+                    </div>
+                </div>
+            <p>Station:</p>
+            <table class="table">
+              <thead class="thead-dark">
+                <tr>
+                  <th>Clearence Name</th>
+                  <th>Valid From</th>
+                  <th>Valid Till</th>
+                  <th>First Reminder Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let clearence of statutoryClearanceList | myfilter:selectedStation">
+                  <td>{{clearence.name}}</td>
+                  <td>{{clearence.expiryDate| date }}</td>
+                  <td>{{clearence.expiryDate| date }}</td>
+                  <td>{{clearence.reminderDate| date }}</td>
+                  <td>
+                    <button type="button" style="margin: 10px" (click) = "sendReminderEmail(clearence);" class="btn btn-info">Send Email</button>     
+                    <button type="button" style="margin: 10px" (click) = "editStatutoryClearence(clearence);open(content)" class="btn btn-dark">Edit</button>
+                    <button type="button" style="margin: 10px" *ngIf="!clearence.certificateUploaded"  (click) = "uploadStatutoryClearenceCertificate(clearence);open(content)" class="btn btn-default">Upload Certificate</button>
+                    <button type="button" style="margin: 10px" (click) = "deleteStatutoryClearance(clearence);" class="btn btn-outline-dark">Delete</button></td>
+                  </tr>
+               </tbody>
+            </table>
+</div>
+
+<ng-template #content let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Create/Edit Statutory Clearence</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div *ngIf="currentView == 'formView' || currentView == 'editView'">
+        <form>
+            <div class="row">
+                <div class="form-group col-md-6">
+                        <label for="name">Name:</label>
+                        <input type="text" class="form-control" [(ngModel)]="newStatutoryClearance.name"  id="name" placeholder="Enter Clerence Name" name="name" ngDefaultControl>
+                      </div>
+                      <div class="form-group col-md-6">
+                            <label for="sel1">Station:</label>
+                            <select name = "station" [(ngModel)]="newStatutoryClearance.station" class="form-control" id="sel1">
+                              <option  ng-options="station as staion for station in stations"  *ngFor="let station of stations" ngDefaultControl>{{station}}</option>
+                            </select>
+                      </div>
+        </div>
+          <div class="row">
+                <div class="form-group col-md-6">
+                    <label for="expiry">Expiry Date:</label>
+                    <div class="form-group">
+                      <div class="input-group">
+                        <input  [(ngModel)]="newStatutoryClearance.expiryDate" class="form-control" placeholder="yyyy-mm-dd"
+                                name="dp2" ngbDatepicker #d2="ngbDatepicker">
+                        <div class="input-group-append">
+                          <button class="btn btn-outline-secondary" (click)="d2.toggle()" type="button">
+                            <img src="img/calendar-icon.svg" style="width: 1.2rem; height: 1rem; cursor: pointer;"/>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group col-md-6">
+                        <label for="reminderDate">First Reminder Date:</label>
+                        <div class="form-group">
+                          <div class="input-group">
+                            <input  [(ngModel)]="newStatutoryClearance.reminderDate" class="form-control" placeholder="yyyy-mm-dd"
+                                    name="dp1" ngbDatepicker #d1="ngbDatepicker">
+                            <div class="input-group-append">
+                              <button class="btn btn-outline-secondary" (click)="d1.toggle()" type="button">
+                                <img src="img/calendar-icon.svg" style="width: 1.2rem; height: 1rem; cursor: pointer;"/>
+                              </button>
+                            </div>
+                          </div>
+                        </div>  
+                    </div>
+            </div>
+    
+    
+          <div class="row">
+                <div class="form-group col-md-6">
+                        <label for="first person responsable">First Responsable Person Name:</label>
+                        <input [(ngModel)]="newStatutoryClearance.firstResponsablePersonName" type="text" class="form-control" id="first responsable person" placeholder="Name" name="firstResponsablePersonName" ngDefaultControl>
+                  </div>
+                  <div class="form-group col-md-6">
+                        <label for="second reminder person">First Responsable Person email:</label>   
+                    <input [(ngModel)]="newStatutoryClearance.firstResponsableEmail" type="email" class="form-control" id="firstResponsableEmail" placeholder="Email" name="firstResponsablePersonEmail" ngDefaultControl> 
+                  </div>
+                </div>
+    
+          <div class="row">
+                <div class="form-group col-md-6">
+                        <label for="first reminder person">First Reminder Person Name:</label>
+                        <input [(ngModel)]="newStatutoryClearance.firstReminderPerson" type="text" class="form-control" id="first reminder person" placeholder="Name" name="firstReminderPerson" ngDefaultControl>
+                    </div>
+                    <div class="form-group col-md-6">
+                            <label for="second reminder person">First Reminder Person email:</label>   
+                            <input [(ngModel)]="newStatutoryClearance.FirstReminderPersonEmail" type="email" class="form-control" id="FirstReminderEmail" placeholder="Email" name="FirstReminderPersonEmail" ngDefaultControl>
+                    </div>
+                </div>
+    
+    
+            <div class="row">
+                    <div class="form-group col-md-6">
+                            <label for="second reminder person">Second Reminder Person Name:</label>
+                            <input   [(ngModel)]="newStatutoryClearance.secondReminderPerson" type="text" class="form-control" id="second reminder person" placeholder="Name" name="secondReminderPerson" ngDefaultControl>
+                      </div>
+                      <div class="form-group col-md-6">
+                            <label for="second reminder person">Second Reminder Person email:</label>    
+                        <input  [(ngModel)]="newStatutoryClearance.SecondReminderPersonEmail" type="email" class="form-control" id="SecondReminderEmail" placeholder="Email" name="SecondReminderPersonEmail" ngDefaultControl>
+                    </div>
+                </div>
+        </form>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="saveStatutoryClearance();c('Save click')">Save</button>
+      </div>
+    </div>
+
+    <div *ngIf="currentView == 'uploadView'">
+        <form>
+          <p><ngb-progressbar [showValue]="true" type="info" [(ngModel)]="newStatutoryClearance.progress" name="progress" [value]="newStatutoryClearance.progress"></ngb-progressbar></p>
+          <h2>Please upload the statutory certificate</h2>
+          <input type="file" name="photo" ng2FileSelect [uploader]="uploader" />
+  
+          <button type="button" class="btn btn-success btn-s" 
+            (click)="uploader.uploadAll()" 
+            [disabled]="!uploader.getNotUploadedItems().length" >
+                Push to server
+          </button>
+        </form>
+    </div>  
+  </div>  
+</ng-template>
