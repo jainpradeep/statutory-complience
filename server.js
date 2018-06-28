@@ -20,6 +20,7 @@ var fs = require('fs')
 const multer = require('multer');
 const DIR = './uploads';
 var emailConfig = require('./emailConfig.js');
+var schedule = require('node-schedule');
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -34,6 +35,7 @@ let upload = multer({storage: storage});
 
 
 app.post('/api/upload',upload.single('file'), function (req, res) {
+  console.log("asdds");
   console.log(req.file.filename);  
   if (!req.file) {
         console.log("No file received");
@@ -48,6 +50,61 @@ app.post('/api/upload',upload.single('file'), function (req, res) {
         })
       }
 });
+
+
+
+var rule = new schedule.RecurrenceRule();
+rule.dayOfWeek = [0, new schedule.Range(4, 6)];
+rule.hour = 16;
+rule.minute = 39;
+ 
+var j = schedule.scheduleJob(rule, function(){
+
+
+  var data = getData();
+  // data.map(function(clearence){
+  //   var exDate = new Date(clearence.expiryDate);
+  //   var currentDate = new Date();
+  //   return clearence
+  // })
+
+  var test = {body: {to: ["pradeepjain@indianoil.in"],
+  clearenceData : {
+    name:"",
+    station:"",
+    expiryDate:null,
+    reminderDate:null,
+    firstResponsablePersonName : "",
+    firstResponsablePersonEmail : "",
+    firstReminderPerson:"",
+    FirstReminderPersonEmail:"",
+    secondReminderPerson:"",
+    SecondReminderPersonEmail:"",
+    email:"adasdasasdasds",
+    progress:0,
+    certificateUploaded: false
+  }} 
+}
+  
+  
+  //sendMail(test)
+});
+
+
+async function getData(){
+  var data;
+  await MongoClient.connect("mongodb://10.14.151.91:27017/statutoryClearence",function(er,database){     
+    if (er) return
+       database.db('statutoryClearence').collection('clearamceDB').find({}).toArray(function(err, result) {
+        if (err) throw err;
+        database.close();
+        data = result;
+        return result;
+      });
+    })
+    console.log(data)
+    return data;
+}
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -64,7 +121,7 @@ router.use(function(req, res, next) {
 });
 
 
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 3006);
 
 app.listen(app.get('port'), function () {  
   console.log('Express up and listening on port ' + app.get('port'));
@@ -118,7 +175,6 @@ app.route('/getStatutoryClearence').post(function (req, res) {
           if (er) return
              database.db('statutoryClearence').collection('clearamceDB').find({}).toArray(function(err, result) {
               if (err) throw err;
-              console.log(result);
               database.close();
               res.send(result);
             });
@@ -143,7 +199,6 @@ app.route('/getStatutoryClearence').post(function (req, res) {
   
 app.route('/authenticate')  
     .post(function (req, res) {
-        console.log(req.body)
         config.ad.authenticate("IOC\\" + req.body.username  , req.body.password, function(err, auth) {
           
           if (err) {
@@ -171,7 +226,6 @@ app.route('/authenticate')
 
 app.route("/sendReminderEmail")
 .post(function (req, res) {
-  console.log(req.body)
   emailConfig.server.send({
     text:    "The CCE license for station " + req.body.clearenceData.station + " "  + "is due for expiry on" + req.body.clearenceData.expiryDate + "Action may be initiated for renewal", 
     from:    "pradeepjain@indianoil.in", 

@@ -10,7 +10,7 @@ import { DEFAULT_INTERPOLATION_CONFIG } from '@angular/compiler';
 import { formatDate } from '@angular/common';
 import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 const now = new Date();
-const URL = '/api/upload';
+const URL = 'http://10.14.151.91:3006/api/upload';
 
 @Component({templateUrl: 'home.component.html',
 styleUrls: ['home.component.css'],

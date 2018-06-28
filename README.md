@@ -1,3 +1,3 @@
-# angular-6-registration-login-example
+# Statutory-Conlience
 
-Angular 6 User Registration and Login Example with Webpack 4
+Angular 6 Webpack 4 Application for Statutory Complience

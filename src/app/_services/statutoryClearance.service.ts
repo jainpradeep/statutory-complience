@@ -8,7 +8,7 @@ export class StatutoryClerance {
     constructor(private http: HttpClient) { 
      }
      insertStatutoryClearence(newStatutoryClearance:any) {
-        return this.http.post<any>('http://localhost:3000/insertStatutoryClearence', newStatutoryClearance )
+        return this.http.post<any>('http://10.14.151.91:3006/insertStatutoryClearence', newStatutoryClearance )
             .pipe(map(res => {
                 if (res.msg = "success") {
                     console.log("httpCallsuccess")
@@ -17,7 +17,7 @@ export class StatutoryClerance {
             }));
     }
     getStatutoryClearanceData(){
-        return this.http.post<any>('http://localhost:3000/getStatutoryClearence', {} )
+        return this.http.post<any>('http://10.14.151.91:3006/getStatutoryClearence', {} )
         .pipe(map(res => {
             if (res.msg = "success") {
                 return res;
@@ -27,7 +27,7 @@ export class StatutoryClerance {
     }
 
     deleteStatutoryClearence(statutoryClearanceObj:any){
-        return this.http.post<any>('http://localhost:3000/deleteStatutoryClearence', statutoryClearanceObj )
+        return this.http.post<any>('http://10.14.151.91:3006/deleteStatutoryClearence', statutoryClearanceObj )
         .pipe(map(res => {
             if (res.msg = "success") {
                 return res;
@@ -37,7 +37,7 @@ export class StatutoryClerance {
     }
     
     editStatutoryClearence(statutoryClearanceObj:any){
-        return this.http.post<any>('http://localhost:3000/editStatutoryClearence', statutoryClearanceObj )
+        return this.http.post<any>('http://10.14.151.91:3006/editStatutoryClearence', statutoryClearanceObj )
         .pipe(map(res => {
             if (res.msg = "success") {
                 return res;
@@ -47,7 +47,7 @@ export class StatutoryClerance {
     }
 
     sendReminderEmail(statutoryClearanceObj:any){
-        return this.http.post<any>('http://localhost:3000/editStatutoryClearence', statutoryClearanceObj )
+        return this.http.post<any>('http://10.14.151.91:3006/sendReminderEmail', statutoryClearanceObj )
         .pipe(map(res => {
             if (res.msg = "success") {
                 return res;
